@@ -1,3 +1,6 @@
+https://gamebanana.com/dl/617328
+FPS plus latest build
+
 ![](/art/readme/logo.png)
 
 *Finally, it's open source.*
