@@ -2,19 +2,15 @@ package;
 
 import title.*;
 import config.*;
+import transition.data.*;
 
 import flixel.FlxState;
-import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
-import flixel.graphics.FlxGraphic;
-import flixel.addons.transition.TransitionData;
-import flixel.addons.transition.FlxTransitionableState;
+import lime.utils.Assets;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.text.FlxText;
-import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 
 using StringTools;
 
@@ -34,7 +30,8 @@ class Startup extends FlxState
                                 "Pico", "Philly", "Blammed", 
                                 "Satin-Panties", "High", "Milf", 
                                 "Cocoa", "Eggnog", "Winter-Horrorland", 
-                                "Senpai", "Roses", "Thorns"];
+                                "Senpai", "Roses", "Thorns",
+                                "klaskiiLoop", "freakyMenu"]; //Start of the non-gameplay songs.
                                 
     //List of character graphics and some other stuff.
     //Just in case it want to do something with it later.
@@ -75,14 +72,21 @@ class Startup extends FlxState
         PlayerSettings.player1.controls.loadKeyBinds();
 		Config.configCheck();
 
+        /*Switched to a new custom transition system.
         var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
         diamond.persist = true;
         diamond.destroyOnNoUse = false;
         
-        FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-            new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+        FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), 
+            {asset: diamond, width: 32, height: 32},  new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
         FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
             {asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+        */
+
+        MusicBeatState.defaultTransIn = ScreenWipeIn;
+        MusicBeatState.defaultTransInArgs = [1.2];
+        MusicBeatState.defaultTransOut = ScreenWipeOut;
+        MusicBeatState.defaultTransOutArgs = [0.6];
 
         if (FlxG.save.data.weekUnlocked != null)
 		{
@@ -208,11 +212,13 @@ class Startup extends FlxState
 
     function preloadMusic(){
         for(x in songs){
-            FlxG.sound.cache(Paths.music(x + "_Inst"));
-            //trace("Chached " + x);
+            if(Assets.exists(Paths.music(x + "_Inst"))){
+                FlxG.sound.cache(Paths.music(x + "_Inst"));
+            }
+            else{
+                FlxG.sound.cache(Paths.music(x));
+            }
         }
-        FlxG.sound.cache(Paths.music("klaskiiLoop"));
-        
         loadingText.text = "Songs cached...";
         songsCached = true;
     }
